@@ -1,4 +1,4 @@
-use std::io::{stdin, stdout, Read};
+use std::io::{stdin, stdout};
 
 use crossterm::{
     style::{Color, ResetColor, SetForegroundColor},
