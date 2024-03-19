@@ -13,7 +13,7 @@ pub async fn call_gpt(messages: Vec<Message>) {
     let api_key = env::var("OPEN_AI_KEY").expect("Key not found in enviroment");
     let api_org = env::var("OPEN_AI_ORG").expect("Org not found in enviroment");
 
-    let url = "https://api/openapi.com/v1/chat/completions";
+    let url = "https://api.openai.com/v1/chat/completions";
 
     // Create headers
     let mut headers = HeaderMap::new();
@@ -48,4 +48,21 @@ pub async fn call_gpt(messages: Vec<Message>) {
         .unwrap();
 
     dbg!(response_raw.text().await.unwrap());
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn tests_call_to_openai() {
+        let message = Message {
+            role: "user".to_string(),
+            content: "Hi there this is a test, Give me a short response".to_string(),
+        };
+
+        let messages = vec![message];
+
+        call_gpt(messages).await;
+    }
 }
