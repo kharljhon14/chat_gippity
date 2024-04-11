@@ -6,7 +6,7 @@ use std::env;
 use reqwest::header::{HeaderMap, HeaderValue};
 
 // Call LLM GPT 4 turbo
-pub async fn call_gpt(messages: Vec<Message>) {
+pub async fn call_gpt(messages: Vec<Message>) -> Result<String, Box<dyn std::error::Error + Send>> {
     dotenv().ok();
 
     // Extract API key
@@ -21,33 +21,40 @@ pub async fn call_gpt(messages: Vec<Message>) {
     // Create API key header
     headers.insert(
         "Authorization",
-        HeaderValue::from_str(&format!("Bearer {}", api_key)).unwrap(),
+        HeaderValue::from_str(&format!("Bearer {}", api_key))
+            .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?,
     );
     // Create Open AI org header
     headers.insert(
         "OpenAI-Organization",
-        HeaderValue::from_str(api_org.as_str()).unwrap(),
+        HeaderValue::from_str(api_org.as_str())
+            .map_err(|e| -> Box<dyn std::error::Error + Send> { Box::new(e) })?,
     );
 
     // Create client
-    let client = Client::builder().default_headers(headers).build().unwrap();
+    let client = Client::builder()
+        .default_headers(headers)
+        .build()
+        .map_err(|e| -> Box<dyn std::error::Error> { Box::new(e) });
 
-    // Creat chat completion
+    // Create chat completion
     let chat_completion = ChatCompletion {
         model: "gpt-4-turbo".to_string(),
         temperature: 0.1,
         messages,
     };
 
-    // Troubleshooting
-    let response_raw = client
-        .post(url)
-        .json(&chat_completion)
-        .send()
-        .await
-        .unwrap();
+    todo!()
 
-    dbg!(response_raw.text().await.unwrap());
+    // Troubleshooting
+    // let response_raw = client
+    //     .post(url)
+    //     .json(&chat_completion)
+    //     .send()
+    //     .await
+    //     .unwrap();
+
+    // dbg!(response_raw.text().await.unwrap());
 }
 
 #[cfg(test)]
