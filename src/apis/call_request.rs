@@ -5,7 +5,7 @@ use std::env;
 
 use reqwest::header::{HeaderMap, HeaderValue};
 
-// Call LLM GPT 3.5 turbo
+// Call LLM GPT 4 turbo
 pub async fn call_gpt(messages: Vec<Message>) {
     dotenv().ok();
 
@@ -34,7 +34,7 @@ pub async fn call_gpt(messages: Vec<Message>) {
 
     // Creat chat completion
     let chat_completion = ChatCompletion {
-        model: "gpt-3.5-turbo".to_string(),
+        model: "gpt-4-turbo".to_string(),
         temperature: 0.1,
         messages,
     };
@@ -58,7 +58,7 @@ mod tests {
     async fn tests_call_to_openai() {
         let message = Message {
             role: "user".to_string(),
-            content: "Hi there this is a test, Give me a short response".to_string(),
+            content: "Give me a short response".to_string(),
         };
 
         let messages = vec![message];
