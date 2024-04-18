@@ -1,9 +1,15 @@
+use std::fs;
+
 use reqwest::Client;
 use serde::de::DeserializeOwned;
 
 use crate::{apis::call_request::call_gpt, models::general::llm::Message};
 
 use super::command_line::PrintCommand;
+
+const CODE_TEMPLATE_PATH: &str = "/d/rust/chat_gitppity/web_template/code_template.rs";
+const EXEC_TEMPLATE_PATH: &str = "/d/rust/chat_gitppity/web_template/main.rs";
+const API_SCHEMA_PATH: &str = "/d/rust/chat_gitppity/web_template/schemas/api_schema.json";
 
 // Extend ai function to encourage specific output
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> Message {
@@ -71,6 +77,24 @@ pub async fn check_status_code(client: &Client, url: &str) -> Result<u16, reqwes
     let response = client.get(url).send().await?;
 
     Ok(response.status().as_u16())
+}
+
+// Get Code Template
+pub fn read_code_template_contents() -> String {
+    let path = String::from(CODE_TEMPLATE_PATH);
+    fs::read_to_string(path).expect("Failed to read code template")
+}
+
+// Save nNew Backend Code
+pub fn save_backend_code(content: &String) {
+    let path = String::from(EXEC_TEMPLATE_PATH);
+    fs::write(path, content).expect("Failed to write main.rs file");
+}
+
+// Save JSON API Endpoint Schema
+pub fn save_api_endpoints(api_endpoints: &String) {
+    let path = String::from(API_SCHEMA_PATH);
+    fs::write(path, api_endpoints).expect("Failed to write API endpoints to file");
 }
 
 #[cfg(test)]
