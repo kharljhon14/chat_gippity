@@ -1,3 +1,5 @@
+use serde::de::DeserializeOwned;
+
 use crate::{apis::call_request::call_gpt, models::general::llm::Message};
 
 use super::command_line::PrintCommand;
@@ -45,6 +47,22 @@ pub async fn ai_task_request(
             .await
             .expect("Failed twice to call GPT"),
     }
+}
+
+// Performs call to GPT - Decoded
+pub async fn ai_task_request_decoded<T: DeserializeOwned>(
+    msg_context: String,
+    agent_position: &str,
+    agent_operation: &str,
+    callback_fn: for<'a> fn(&'a str) -> &'static str,
+) -> T {
+    let llm_response =
+        ai_task_request(msg_context, agent_position, agent_operation, callback_fn).await;
+
+    let decoded_response: T = serde_json::from_str(&llm_response.as_str())
+        .expect("Failed to decode ai response from serde_json");
+
+    decoded_response
 }
 
 #[cfg(test)]
