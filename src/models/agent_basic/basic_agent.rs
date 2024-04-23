@@ -5,7 +5,7 @@ use super::basic_traits::BasicTrait;
 #[derive(Debug, PartialEq)]
 pub enum AgentState {
     Discovery,
-    Workong,
+    Working,
     UnitTesting,
     Finished,
 }

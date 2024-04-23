@@ -1,5 +1,5 @@
 use crate::{
-    ai_functions::aifunc_architect::print_project_scope,
+    ai_functions::aifunc_architect::{print_project_scope, print_site_urls},
     helpers::generals::ai_task_request_decoded,
     models::agent_basic::{
         basic_agent::{AgentState, BasicAgent},
@@ -42,5 +42,22 @@ impl AgentSolutionArchitect {
         self.attributes.update_state(AgentState::Finished);
 
         ai_response
+    }
+
+    async fn call_determine_extenal_urls(
+        &mut self,
+        factsheet: &mut FactSheet,
+        msg_context: String,
+    ) {
+        let ai_response = ai_task_request_decoded::<Vec<String>>(
+            msg_context,
+            &self.attributes.position,
+            get_function_string!(print_site_urls),
+            print_site_urls,
+        )
+        .await;
+
+        factsheet.external_urls = Some(ai_response);
+        self.attributes.state = AgentState::UnitTesting
     }
 }
