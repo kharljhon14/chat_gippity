@@ -1,4 +1,9 @@
+use std::fmt::Debug;
+
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
+
+use crate::models::agent_basic::basic_agent::BasicAgent;
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct RouteObject {
@@ -22,4 +27,16 @@ pub struct FactSheet {
     pub external_urls: Option<Vec<String>>,
     pub backend_code: Option<String>,
     pub api_endpoint_schema: Option<Vec<RouteObject>>,
+}
+
+#[async_trait]
+pub trait SpecialFunctions: Debug {
+    // Used to that manager can get attributes form Agents
+    fn get_attributes_from_agent(&self) -> &BasicAgent;
+
+    // This function will allow agents to execute their logic
+    async fn execute(
+        &mut self,
+        factsheet: &mut FactSheet,
+    ) -> Result<(), Box<dyn std::error::Error>>;
 }

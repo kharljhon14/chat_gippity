@@ -1,6 +1,6 @@
 use crate::models::general::llm::Message;
 
-use super::basic_trait::BasicTrait;
+use super::basic_traits::BasicTrait;
 
 #[derive(Debug, PartialEq)]
 pub enum AgentState {
