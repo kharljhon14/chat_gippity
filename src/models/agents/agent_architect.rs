@@ -1,8 +1,14 @@
+use std::time::Duration;
+
 use async_trait::async_trait;
+use reqwest::Client;
 
 use crate::{
     ai_functions::aifunc_architect::{print_project_scope, print_site_urls},
-    helpers::generals::ai_task_request_decoded,
+    helpers::{
+        command_line::PrintCommand,
+        generals::{ai_task_request_decoded, check_status_code},
+    },
     models::agent_basic::{
         basic_agent::{AgentState, BasicAgent},
         basic_traits::BasicTrait,
@@ -91,7 +97,58 @@ impl SpecialFunctions for AgentSolutionArchitect {
                         self.attributes.state = AgentState::UnitTesting;
                     }
                 }
-                AgentState::UnitTesting => {}
+
+                AgentState::UnitTesting => {
+                    let mut exclude_urls: Vec<String> = vec![];
+
+                    let client = Client::builder()
+                        .timeout(Duration::from_secs(5))
+                        .build()
+                        .unwrap();
+
+                    // Find faulty urls
+
+                    let urls = factsheet
+                        .external_urls
+                        .as_ref()
+                        .expect("No URL object on factssheet");
+
+                    for url in urls {
+                        let endpoint_str = format!("Testing URL Endpoint: {}", url);
+                        PrintCommand::UnitTest.print_agent_message(
+                            self.attributes.position.as_str(),
+                            endpoint_str.as_str(),
+                        );
+
+                        // Perform URL test
+                        match check_status_code(&client, url).await {
+                            Ok(status_code) => {
+                                if status_code != 200 {
+                                    exclude_urls.push(url.clone())
+                                }
+                            }
+                            Err(e) => println!("Error checking {}: {}", url, e),
+                        }
+                    }
+
+                    // Exclude any faulty urls
+
+                    if exclude_urls.len() > 0 {
+                        let new_urls: Vec<String> = factsheet
+                            .external_urls
+                            .as_ref()
+                            .unwrap()
+                            .iter()
+                            .filter(|url| !exclude_urls.contains(&url))
+                            .cloned()
+                            .collect();
+
+                        factsheet.external_urls = Some(new_urls);
+                    }
+
+                    // Confirm done
+                    self.attributes.state = AgentState::Finished;
+                }
 
                 _ => {
                     self.attributes.state = AgentState::Finished;
