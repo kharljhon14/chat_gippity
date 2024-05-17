@@ -1,5 +1,3 @@
-use crossterm::style::Attributes;
-
 use crate::ai_functions::aifunc_managing::convert_user_input_to_goal;
 use crate::helpers::generals::ai_task_request;
 use crate::models::agent_basic::basic_agent::AgentState;
@@ -51,5 +49,25 @@ impl ManagingAgent {
             agents,
             factsheet,
         })
+    }
+
+    fn add_agent(&mut self, agent: Box<dyn SpecialFunctions>) {
+        self.agents.push(agent);
+    }
+
+    fn create_agents(&mut self) {
+        self.add_agent(Box::new(AgentSolutionArchitect::new()));
+    }
+
+    pub async fn execute_project(&mut self) {
+        self.create_agents();
+
+        for agent in &mut self.agents {
+            let agent_result: Result<(), Box<dyn std::error::Error>> =
+                agent.execute(&mut self.factsheet).await;
+
+            let agent_info = agent.get_attributes_from_agent();
+            dbg!(agent_info);
+        }
     }
 }
