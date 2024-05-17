@@ -71,3 +71,21 @@ impl ManagingAgent {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn tests_managing_agent() {
+        let user_request = "Need a full application app that tracks my fitness progress Needs to include timezones";
+
+        let mut managing_agent = ManagingAgent::new(user_request.to_string())
+            .await
+            .expect("Error creating managing agent");
+
+        managing_agent.execute_project().await;
+
+        dbg!(managing_agent.factsheet);
+    }
+}
