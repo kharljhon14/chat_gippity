@@ -176,7 +176,7 @@ mod tests {
 
         let factsheet_str = r#"            
         {
-            "project_description": "build a website that tracks the current news about the philippines",
+            "project_description": "build a web server for tracking my fitness journey",
             "project_scope":{
                     "is_crud_required": true,
                     "is_user_login_and_logout": true,

@@ -9,7 +9,7 @@ pub fn print_backend_webserver_code(_project_description_and_template: &str) {
     /// IMPORTANT: The following libraries are already installed
     ///   reqwest, serde, serde_json, tokio, actix-web, async-trait, actix_cors
     /// No other external libraries should be used. Write functions that fit with the description from the PROJECT_DESCRIPTION
-    /// OUTPUT: Print ONLY the code, nothing else. This function ONLY prints code.
+    /// OUTPUT: IMPORTANT Print ONLY the code, nothing else. This function ONLY prints code!! do not add ```rust or ``` at the start or end!
     println!(OUTPUT)
 }
 
@@ -22,6 +22,7 @@ pub fn print_improved_webserver_code(_project_description_and_template: &str) {
     ///   3. ONLY writes the code. No commentary.
     /// IMPORTANT: The following libraries are already installed. Does not use ANY libraries other than what was provided in the template
     ///   reqwest, serde, serde_json, tokio, actix-web, async-trait
+    /// OUTPUT: IMPORTANT Print ONLY the code, nothing else. This function ONLY prints code!! do not add ```rust or ``` at the start or end!
     println!(OUTPUT)
 }
 
@@ -29,7 +30,7 @@ pub fn print_improved_webserver_code(_project_description_and_template: &str) {
 pub fn print_fixed_code(_broken_code_with_bugs: &str) {
     /// INPUT: Takes in Rust BROKEN_CODE and the ERROR_BUGS found
     /// FUNCTION: Removes bugs from code
-    /// IMPORTANT: Only prints out the new and improved code. No commentary or anything else
+    /// OUTPUT: IMPORTANT Print ONLY the code, nothing else. This function ONLY prints code!! do not add ```rust or ``` at the start or end!
     println!(OUTPUT)
 }
 
