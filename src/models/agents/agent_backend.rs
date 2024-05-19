@@ -80,4 +80,24 @@ impl AgentBackendDeveloper {
         save_backend_code(&ai_response);
         factsheet.backend_code = Some(ai_response);
     }
+
+    async fn call_fixed_code_bugs(&mut self, factsheet: &mut FactSheet) {
+        // Concat instructions
+        let msg_context = format!(
+            "BROKEN_CODE: {:?} \n ERROR_BUGS: {:?} \n
+            THIS FUNCTION ONLY OUTPUTS CODE. JUST OUTPUT THE CODE.",
+            factsheet.backend_code, self.bug_errors,
+        );
+
+        let ai_response = ai_task_request(
+            msg_context,
+            &self.attributes.position,
+            get_function_string!(print_fixed_code),
+            print_backend_webserver_code,
+        )
+        .await;
+
+        save_backend_code(&ai_response);
+        factsheet.backend_code = Some(ai_response);
+    }
 }
