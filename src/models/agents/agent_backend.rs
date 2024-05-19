@@ -7,7 +7,7 @@ use crate::helpers::generals::{
     read_exec_main_contents, save_api_endpoints, save_backend_code,
 };
 
-use crate::helpers::command_line::PrintCommand;
+use crate::helpers::command_line::{confirm_safe_code, PrintCommand};
 use crate::helpers::generals::ai_task_request;
 use crate::models::agent_basic::basic_agent::{AgentState, BasicAgent};
 use crate::models::agents::agent_traits::{FactSheet, RouteObject, SpecialFunctions};
@@ -144,6 +144,18 @@ impl SpecialFunctions for AgentBackendDeveloper {
                     self.attributes.state = AgentState::UnitTesting;
                 }
                 AgentState::UnitTesting => {
+                    // ! Guard :: ENSURE AI SAFETY
+                    PrintCommand::UnitTest.print_agent_message(
+                        self.attributes.position.as_str(),
+                        "Backend code unit testing: Requesting user input",
+                    );
+
+                    let is_safe_code = confirm_safe_code();
+
+                    if !is_safe_code {
+                        panic!("Better go work on some AI alignment instead...")
+                    }
+
                     self.attributes.state = AgentState::Finished;
                 }
                 _ => {}
