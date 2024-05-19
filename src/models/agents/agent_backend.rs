@@ -3,7 +3,8 @@ use crate::ai_functions::aifunc_backend::{
     print_rest_api_endpoints,
 };
 use crate::helpers::generals::{
-    check_status_code, read_code_template_contents, save_api_endpoints, save_backend_code,
+    ai_task_request_decoded, check_status_code, read_code_template_contents, save_api_endpoints,
+    save_backend_code,
 };
 
 use crate::helpers::command_line::PrintCommand;
@@ -14,7 +15,6 @@ use crate::models::agents::agent_traits::{FactSheet, RouteObject, SpecialFunctio
 use async_trait::async_trait;
 use reqwest::Client;
 use std::fs;
-use std::process::{Command, Stdio};
 use std::time::Duration;
 use tokio::time;
 
@@ -39,5 +39,45 @@ impl AgentBackendDeveloper {
             bug_errors: None,
             bug_count: 0,
         }
+    }
+
+    async fn call_initial_backend_code(&mut self, factsheet: &mut FactSheet) {
+        let code_template_str = read_code_template_contents();
+
+        // Concat instructions
+        let msg_context = format!(
+            "CODE TEMPLATE: {} \n PROJEC_DESCRIPTION: {} \n",
+            code_template_str, factsheet.project_description
+        );
+
+        let ai_response = ai_task_request(
+            msg_context,
+            &self.attributes.position,
+            get_function_string!(print_backend_webserver_code),
+            print_backend_webserver_code,
+        )
+        .await;
+
+        save_backend_code(&ai_response);
+        factsheet.backend_code = Some(ai_response);
+    }
+
+    async fn call_improved_backend_code(&mut self, factsheet: &mut FactSheet) {
+        // Concat instructions
+        let msg_context = format!(
+            "CODE TEMPLATE: {:?} \n PROJEC_DESCRIPTION: {:?} \n",
+            factsheet.backend_code, factsheet
+        );
+
+        let ai_response = ai_task_request(
+            msg_context,
+            &self.attributes.position,
+            get_function_string!(print_improved_webserver_code),
+            print_backend_webserver_code,
+        )
+        .await;
+
+        save_backend_code(&ai_response);
+        factsheet.backend_code = Some(ai_response);
     }
 }
