@@ -7,9 +7,9 @@ use crate::{apis::call_request::call_gpt, models::general::llm::Message};
 
 use super::command_line::PrintCommand;
 
-const CODE_TEMPLATE_PATH: &str = "/d/rust/chat_gitppity/web_template/code_template.rs";
-const EXEC_TEMPLATE_PATH: &str = "/d/rust/chat_gitppity/web_template/main.rs";
-const API_SCHEMA_PATH: &str = "/d/rust/chat_gitppity/web_template/schemas/api_schema.json";
+const CODE_TEMPLATE_PATH: &str = r#"D:\rust\web_server\src\code_template.rs"#;
+const EXEC_TEMPLATE_PATH: &str = r#"D:\rust\web_server\src\main.rs"#;
+const API_SCHEMA_PATH: &str = "/d/rust/web_server/src/schemas/api_schema.json";
 
 // Extend ai function to encourage specific output
 pub fn extend_ai_function(ai_func: fn(&str) -> &'static str, func_input: &str) -> Message {
