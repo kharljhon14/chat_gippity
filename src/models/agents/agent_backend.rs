@@ -170,7 +170,7 @@ impl SpecialFunctions for AgentBackendDeveloper {
                         .stdout(Stdio::piped())
                         .stderr(Stdio::piped())
                         .output()
-                        .expect("Failed to run backend application");
+                        .expect("Failed to build backend application");
 
                     // Determine if build errors
                     if build_backend_server.status.success() {
@@ -203,6 +203,54 @@ impl SpecialFunctions for AgentBackendDeveloper {
                         self.attributes.state = AgentState::Working;
                         continue;
                     }
+
+                    /*
+                        Extract and test
+                        Rest API endpoints
+                    */
+
+                    let api_endpoints_str = self.call_extract_rest_api_endpoints().await;
+
+                    // Convert API endpoints into values
+                    let api_enpoints: Vec<RouteObject> =
+                        serde_json::from_str(api_endpoints_str.as_str())
+                            .expect("Failed to decode API endpoints");
+
+                    // Define endpoints to check
+                    let check_endpoints: Vec<RouteObject> = api_enpoints
+                        .iter()
+                        .filter(|&route_object| {
+                            route_object.method == "get" && route_object.is_route_dyanmic == "false"
+                        })
+                        .cloned()
+                        .collect();
+
+                    // Store API Endpoints
+                    factsheet.api_endpoint_schema = Some(check_endpoints.clone());
+
+                    // Run Backend application
+                    PrintCommand::UnitTest.print_agent_message(
+                        self.attributes.position.as_str(),
+                        "Backend Code Unit Testing: Starting web server...",
+                    );
+
+                    // Execute running server
+                    let run_backend_server: std::process::Output = Command::new("cargo")
+                        .arg("run")
+                        .current_dir(WEB_SERVER_PROJECT_PATH)
+                        .stdout(Stdio::piped())
+                        .stderr(Stdio::piped())
+                        .output()
+                        .expect("Failed to run backend application");
+
+                    // Let user know testing on server will take place soon
+                    PrintCommand::UnitTest.print_agent_message(
+                        self.attributes.position.as_str(),
+                        "Backend Code Unit Testing: Launching tests on server in 5 seconds...",
+                    );
+
+                    let seconds_sleep = Duration::from_secs(5);
+                    time::sleep(seconds_sleep).await;
 
                     self.attributes.state = AgentState::Finished;
                 }
