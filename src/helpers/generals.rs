@@ -7,6 +7,8 @@ use crate::{apis::call_request::call_gpt, models::general::llm::Message};
 
 use super::command_line::PrintCommand;
 
+pub const WEB_SERVER_PROJECT_PATH: &str = r#"D:\rust\web_server"#;
+
 const CODE_TEMPLATE_PATH: &str = r#"D:\rust\web_server\src\code_template.rs"#;
 const EXEC_TEMPLATE_PATH: &str = r#"D:\rust\web_server\src\main.rs"#;
 const API_SCHEMA_PATH: &str = "/d/rust/web_server/src/schemas/api_schema.json";
